@@ -1,0 +1,3 @@
+C:\Users\uzeyi\anaconda3\envs\phys_cpp\Library\bin\cmake.exe -E rm -f CMakeFiles\PhysicsEngine.dir/objects.a
+C:\Users\uzeyi\anaconda3\envs\phys_cpp\Library\mingw-w64\bin\ar.exe qc CMakeFiles\PhysicsEngine.dir/objects.a @CMakeFiles\PhysicsEngine.dir\objects1.rsp
+C:\Users\uzeyi\anaconda3\envs\phys_cpp\Library\mingw-w64\bin\c++.exe -Wl,--whole-archive CMakeFiles\PhysicsEngine.dir/objects.a -Wl,--no-whole-archive -o PhysicsEngine.exe -Wl,--out-implib,libPhysicsEngine.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\PhysicsEngine.dir\linkLibs.rsp

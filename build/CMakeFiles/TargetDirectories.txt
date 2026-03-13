@@ -1,0 +1,3 @@
+C:/Users/uzeyi/Desktop/physengineproj/build/CMakeFiles/PhysicsEngine.dir
+C:/Users/uzeyi/Desktop/physengineproj/build/CMakeFiles/edit_cache.dir
+C:/Users/uzeyi/Desktop/physengineproj/build/CMakeFiles/rebuild_cache.dir

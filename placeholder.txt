@@ -1,0 +1,80 @@
+glClear(GL_COLOR_BUFFER_BIT);
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+    ImGui::SliderFloat("Gravity Y", &gravity, -2.0f, 0.0f);
+    ImGui::SliderFloat("Pull Force X", &pullForceX, -1.0f, 1.0f);
+    if (ImGui::Button("Zero FX")) {
+        pullForceX = 0.0f; // clear external x force
+    }
+    if (ImGui::Button("Zero FY")) {
+        pullForceY = 0.0f; // clear external y force
+    }
+    if (ImGui::Button("Reset Gravity")) {
+        gravity = -0.981f; // reset gravity to default
+    }
+    if (ImGui::Button("perfect conditions")) {
+        bounciness = 1.0f;
+        mu_k = 0.0f;
+        mu_s = 0.0f;
+    }
+    if (ImGui::Button("normal conditions")) {
+        bounciness = 0.8f;
+        mu_k = 0.25f;
+        mu_s = 0.5f;
+    }
+    
+    ImGui::SliderFloat("Pull Force Y", &pullForceY, -1.0f, 2.0f);
+    ImGui::Text("Ball Velocity: %f", ball.velocity.x);
+    ImGui::Text("FX force: %f", netFX);
+    ImGui::Text("Friction force: %f", friction);
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+
+
+
+    bool onFloor = (ball.position.y-radius <= floorY + 1e-5f);
+    if (onFloor) {
+        float normal = ball.mass * -gravity; // magnitude of normal force
+        // if nearly stationary horizontally and pull is not enough to overcome static friction
+        if (fabs(ball.velocity.x) < 1e-3f && fabs(pullForceX) < mu_s * normal) {
+            // static friction cancels pull
+            friction = -pullForceX;
+            ball.velocity.x = 0.0f; // prevent drift
+        } else {
+            // kinetic friction opposes motion (or intended motion if velocity zero)
+            float dir = (ball.velocity.x != 0.0f) ? sign(ball.velocity.x) : sign(pullForceX);
+            friction = -mu_k * normal * dir;
+        }
+    } else {
+        friction = 0.0f;
+    }
+
+    netFX = pullForceX + friction;
+    netFY = ball.mass * gravity+pullForceY; // pass actual force to RK4
+
+    float currentFrame = glfwGetTime();
+    float dt = (currentFrame - lastFrame);
+    lastFrame = currentFrame;
+    ball.updateRK4(dt, {netFX, netFY}); 
+
+    // collision responses
+    if (ball.position.x+radius >= wallX or ball.position.x-radius <= -wallX) {
+        ball.position.x = (ball.position.x+radius >= wallX) ? wallX-radius : -wallX+radius;
+        ball.velocity.x = -ball.velocity.x * bounciness;
+        pullForceX = 0.0f;
+    }
+    if (ball.position.y-radius <= floorY or ball.position.y+radius >= -floorY) {
+        ball.position.y = (ball.position.y-radius <= floorY) ? floorY+radius : -floorY-radius;
+        ball.velocity.y = -ball.velocity.y * bounciness;
+        // after bounce, friction will be recomputed next iteration
+    }   
+
+    drawCircle(ball.position.x, ball.position.y, radius, 20);
+
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glBegin(GL_LINES);
+    glVertex2f(ball.position.x, ball.position.y);
+    glVertex2f(ball.position.x + netFX*0.3f, ball.position.y + netFY*0.3f);
+    glEnd();

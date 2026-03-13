@@ -1,0 +1,171 @@
+#include <GLFW/glfw3.h>
+#include "Body.h"
+#include <cmath>
+#include "imgui.h"
+#include "backends/imgui_impl_glfw.h"
+#include "backends/imgui_impl_opengl3.h"
+#include <vector>
+
+enum ShapeType { CIRCLE, SQUARE, RECTANGLE };
+struct PhysicsObject
+{
+    Body body;
+    ShapeType shape;
+    float size; // radius for circle, half-size for square
+    float mass;
+    float pullForceX;
+    float pullForceY;
+    float width; // only for rectangle
+
+};
+
+void drawCircle(float x, float y, float radius, int segments) {
+    glBegin(GL_TRIANGLE_FAN);
+    glColor3f(0.5f, 0.5f, 1.0f); // Light blue color
+    glVertex2f(x, y); // Center
+    for(int i = 0; i <= segments; i++) {
+        float theta = 2.0f * 3.1415926f * float(i) / float(segments);
+        glVertex2f(x + radius * cos(theta), y + radius * sin(theta));
+    }
+    glEnd();
+}
+void drawRectangle(float x, float y, float lenhalf, float widthhalf) {
+    glColor3f(1.0f, 1.0f, 1.0f); // Light blue color
+    glBegin(GL_QUADS);
+
+        glVertex2f(x - widthhalf, y - lenhalf); // Bottom Left
+        glVertex2f(x + widthhalf, y - lenhalf); // Bottom Right
+        glVertex2f(x + widthhalf, y + lenhalf); // Top Right
+        glVertex2f(x - widthhalf, y + lenhalf); // Top Left
+    glEnd();
+}
+void drawSquare(float x, float y, float size) {
+    float half = size / 2.0f;
+    glColor3f(0.5f, 0.5f, 1.0f); // Light blue color
+    glBegin(GL_QUADS);
+        glVertex2f(x - half, y - half); // Bottom Left
+        glVertex2f(x + half, y - half); // Bottom Right
+        glVertex2f(x + half, y + half); // Top Right
+        glVertex2f(x - half, y + half); // Top Left
+    glEnd();
+}
+int sign(float val) {
+    if (val > 0.0f) return 1;
+    if (val < 0.0f) return -1;
+    return 0;
+}
+int main() {
+    // Initialize GLFW
+    if (!glfwInit()) return -1;
+    GLFWwindow* window = glfwCreateWindow(640, 480, "Physics Engine", NULL, NULL);
+    glfwMakeContextCurrent(window);
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    // This ensures the default font is built
+    io.Fonts->AddFontDefault();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 130");
+    Body ball(0.0f, 0.5f, 1.0f);
+
+    float radius = 0.05f;
+    float pullForceY = 0.0f;
+    float gravity = -0.981f;
+    float friction = 0.0f;
+    float netFX = 0.0f;
+    float netFY = 0.0f;
+    float floorY = -0.9f;
+    float wallX = 0.9f; 
+    float bounciness = 0.8f;
+    // coefficients of friction
+    float mu_k = 0.45f;      // kinetic friction coefficient
+    float mu_s = 0.5f;       // static (still) friction coefficient
+
+    std::vector<PhysicsObject> world; 
+    float lastFrame = 0.0f;
+
+    while (!glfwWindowShouldClose(window)) {
+    float currentFrame = glfwGetTime();
+        float dt = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+        ImGui::Begin("Spawner");
+            if (ImGui::Button("Summon Circle")) {
+                world.push_back({ Body(0.0f, 0.5f, 1.0f), CIRCLE, 0.05f,0.0f,0.2f,0.0f,0.0f });
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Summon Square")) {
+                world.push_back({ Body(0.0f, 0.5f, 1.0f), SQUARE, 0.05f,0.0f,0.2f,0.0f,0.0f });
+            }
+            ImGui::SameLine();
+            if (ImGui::Button("Summon Rectangle")) {
+                world.push_back({ Body(0.0f, 0.5f, 1.0f), RECTANGLE, 0.05f,0.0f,0.2f,0.0f,0.1f });
+            }
+            ImGui::End();
+    glClear(GL_COLOR_BUFFER_BIT);
+
+        for (auto& obj : world) {
+            
+            float width=(obj.shape == RECTANGLE) ? obj.width - obj.size : 0.0f;
+            obj.body.updateRK4(dt, {netFX, netFY});
+            bool onFloor = (obj.body.position.y-obj.size <= floorY + 1e-5f);
+            if (onFloor) {
+                float normal = obj.body.mass * -gravity;
+                if (fabs(obj.body.velocity.x) < 1e-3f && fabs(obj.pullForceX) < mu_s * normal) {
+                    friction = -obj.pullForceX;
+                    obj.body.velocity.x = 0.0f;
+                } else {
+                    float dir = (obj.body.velocity.x != 0.0f) ? sign(obj.body.velocity.x) : sign(obj.pullForceX);
+                    friction = -mu_k * normal * dir;
+                }
+            } else {
+                friction = 0.0f;
+            } 
+            // A. Calculate forces for this specific object
+            float netFX = obj.pullForceX + friction; // Simplified for example
+            float netFY = (obj.body.mass * gravity) + obj.pullForceY;
+
+            // B. Update Physics
+            obj.body.updateRK4(dt, {netFX, netFY});
+
+            // C. Collision Logic (Walls/Floor)
+            if (obj.body.position.y - obj.size <= floorY) {
+                obj.body.position.y = floorY + obj.size;
+                obj.body.velocity.y *= -bounciness;
+            }
+            if (obj.body.position.x + obj.size + width >= wallX or obj.body.position.x - obj.size - width <= -wallX) {
+                obj.body.position.x = (obj.body.position.x + obj.size + width >= wallX) ? wallX - obj.size - width : -wallX + obj.size + width;
+                obj.body.velocity.x *= -bounciness;
+                obj.pullForceX = 0.0f;
+            }
+            // ... (Add other collisions here) ...
+
+            // D. Draw this specific object
+            if (obj.shape == CIRCLE) {
+                drawCircle(obj.body.position.x, obj.body.position.y, obj.size, 20);
+            } else if (obj.shape == RECTANGLE) {
+                drawRectangle(obj.body.position.x, obj.body.position.y, obj.size, obj.width);
+            } else {
+                drawSquare(obj.body.position.x, obj.body.position.y, obj.size * 2.0f);
+            }
+        }
+
+        glColor3f(1.0f, 1.0f, 1.0f);
+        glBegin(GL_LINES);
+            glVertex2f(-wallX, floorY); glVertex2f(wallX, floorY); // Floor
+            glVertex2f(-wallX, floorY); glVertex2f(-wallX, -floorY); // Left
+            glVertex2f(wallX, floorY); glVertex2f(wallX, -floorY); // Right
+        glEnd();
+
+        // 8. RENDER IMGUI & SWAP
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+
+    }
+    glfwTerminate();
+    return 0;
+    
+}
