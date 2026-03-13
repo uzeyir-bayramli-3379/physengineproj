@@ -1,49 +1,14 @@
 CMakeFiles/PhysicsEngine.dir/main.cpp.obj: \
  C:\Users\uzeyi\Desktop\physengineproj\main.cpp \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/include/GLFW/glfw3.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/lib/gcc/x86_64-w64-mingw32/5.3.0/include/stddef.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/stddef.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/crtdefs.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/_mingw.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/_mingw_mac.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/_mingw_secapi.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/vadefs.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/sdks/_mingw_directx.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/sdks/_mingw_ddk.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/lib/gcc/x86_64-w64-mingw32/5.3.0/include/stdint.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/stdint.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/GL/gl.h \
- C:\Users\uzeyi\Desktop\physengineproj\Body.h \
- C:\Users\uzeyi\Desktop\physengineproj\Vector2.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/cmath \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/vector \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/stl_algobase.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/x86_64-w64-mingw32/bits/c++config.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/x86_64-w64-mingw32/bits/os_defines.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/x86_64-w64-mingw32/bits/cpu_defines.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/cpp_type_traits.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/ext/type_traits.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/math.h \
- C:/Users/uzeyi/Desktop/physengineproj/vendor/imgui/imgui.h \
- C:/Users/uzeyi/Desktop/physengineproj/vendor/imgui/imconfig.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/lib/gcc/x86_64-w64-mingw32/5.3.0/include/float.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/float.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/lib/gcc/x86_64-w64-mingw32/5.3.0/include/stdarg.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/stdarg.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/_mingw_stdarg.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/string.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/sec_api/string_s.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/assert.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/stdlib.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/lib/gcc/x86_64-w64-mingw32/5.3.0/include-fixed/limits.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/lib/gcc/x86_64-w64-mingw32/5.3.0/include-fixed/syslimits.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/limits.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/sec_api/stdlib_s.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/malloc.h \
- C:/Users/uzeyi/Desktop/physengineproj/vendor/imgui/backends/imgui_impl_glfw.h \
- C:/Users/uzeyi/Desktop/physengineproj/vendor/imgui/backends/imgui_impl_opengl3.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/vector \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/stl_algobase.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/functexcept.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/exception_defines.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/cpp_type_traits.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/ext/type_traits.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/ext/numeric_traits.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/stl_pair.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/move.h \
@@ -75,43 +40,55 @@ CMakeFiles/PhysicsEngine.dir/main.cpp.obj: \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/hash_bytes.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/range_access.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/vector.tcc \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/cstdio \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/stdio.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/cmath \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/math.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/crtdefs.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/_mingw.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/_mingw_mac.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/_mingw_secapi.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/vadefs.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/sdks/_mingw_directx.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/sdks/_mingw_ddk.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/include/GL/glew.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/inttypes.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/lib/gcc/x86_64-w64-mingw32/5.3.0/include/stdint.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/stdint.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/lib/gcc/x86_64-w64-mingw32/5.3.0/include/stddef.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/stddef.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/_mingw_print_push.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/_mingw_off_t.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/swprintf.inl \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/sec_api/stdio_s.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/_mingw_print_pop.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/algorithm \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/utility \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/stl_relops.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/stl_algo.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/cstdlib \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/algorithmfwd.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/stl_heap.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/stl_tempbuf.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/random \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/string \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/GL/glu.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/GL/gl.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/include/GLFW/glfw3.h \
+ C:\Users\uzeyi\Desktop\physengineproj\Vector2.h \
+ C:\Users\uzeyi\Desktop\physengineproj\Body.h \
+ C:\Users\uzeyi\Desktop\physengineproj\Shape.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/cfloat \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/lib/gcc/x86_64-w64-mingw32/5.3.0/include/float.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/float.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/iostream \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/ostream \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/ios \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/iosfwd \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/stringfwd.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/char_traits.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/postypes.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/cwchar \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/wchar.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/_mingw_off_t.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/_mingw_stat64.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/swprintf.inl \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/sec_api/wchar_s.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/char_traits.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/cstdint \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/localefwd.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/x86_64-w64-mingw32/bits/c++locale.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/clocale \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/locale.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/iosfwd \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/stdio.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/sec_api/stdio_s.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/cctype \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/ctype.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/ostream_insert.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/cxxabi_forced.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/stl_function.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/backward/binders.h \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/basic_string.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/ios_base.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/ext/atomicity.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/x86_64-w64-mingw32/bits/gthr.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/x86_64-w64-mingw32/bits/gthr-default.h \
@@ -119,6 +96,9 @@ CMakeFiles/PhysicsEngine.dir/main.cpp.obj: \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/errno.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/sys/types.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/process.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/lib/gcc/x86_64-w64-mingw32/5.3.0/include-fixed/limits.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/lib/gcc/x86_64-w64-mingw32/5.3.0/include-fixed/syslimits.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/limits.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/signal.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/pthread_signal.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/sys/timeb.h \
@@ -126,9 +106,47 @@ CMakeFiles/PhysicsEngine.dir/main.cpp.obj: \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/pthread_compat.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/pthread_unistd.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/x86_64-w64-mingw32/bits/atomic_word.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/locale_classes.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/string \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/ostream_insert.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/cxxabi_forced.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/stl_function.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/backward/binders.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/basic_string.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/ext/string_conversions.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/cstdlib \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/stdlib.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/sec_api/stdlib_s.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/malloc.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/cstdio \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/cerrno \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/basic_string.tcc \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/locale_classes.tcc \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/system_error \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/x86_64-w64-mingw32/bits/error_constants.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/stdexcept \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/streambuf \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/streambuf.tcc \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/basic_ios.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/locale_facets.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/cwctype \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/wctype.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/x86_64-w64-mingw32/bits/ctype_base.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/streambuf_iterator.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/x86_64-w64-mingw32/bits/ctype_inline.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/locale_facets.tcc \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/basic_ios.tcc \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/ostream.tcc \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/istream \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/istream.tcc \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/algorithm \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/utility \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/stl_relops.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/stl_algo.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/algorithmfwd.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/stl_heap.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/stl_tempbuf.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/random \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/limits \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/random.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/x86_64-w64-mingw32/bits/opt_random.h \
