@@ -122,7 +122,14 @@ public:
 
         // 2. Impulse Resolution (Bounce and Friction)
         ApplyImpulse(A, B, m);
-        std::cout<<"Normal X: " << m.normal.x << " | Normal Y: " << m.normal.y << " | Depth: " << m.depth << std::endl;
+        if (m.depth<0.01f) {
+            if (std::abs(B.body.velocity.y) < 0.001f) {
+                B.body.velocity.y = 0.0f; // Stop vertical movement if very small
+            }
+            if (std::abs(B.body.velocity.x) < 0.001f) {
+                B.body.velocity.x = 0.0f; // Stop horizontal movement if very small
+            }
+        }
     }
 
 private:
@@ -130,7 +137,7 @@ private:
         float totalInvMass = A.body.invMass + B.body.invMass;
         if (totalInvMass == 0.0f) return;
 
-        const float slop = 0.01f; 
+        const float slop = 0.001f; 
         const float percent = 0.8f; // INCREASED to 0.8f for faster correction
 
         float correctionMag = (std::max(m.depth - slop, 0.0f) / totalInvMass) * percent;
@@ -138,6 +145,7 @@ private:
 
         A.body.position -= correction * A.body.invMass;
         B.body.position += correction * B.body.invMass;
+        
     }
 
     static void ApplyImpulse(PhysicsObject& A, PhysicsObject& B, const Manifold& m) {
@@ -177,16 +185,18 @@ private:
             float mu = 0.3f; // Friction coefficient
             Vector2 frictionImpulse;
             if (std::abs(jt) < j * mu) {
-                frictionImpulse = { tangent.x * jt, tangent.y * jt };
+                frictionImpulse = { -tangent.x * jt, tangent.y * jt };
             } else {
-                frictionImpulse = { -tangent.x * j * mu, -tangent.y * j * mu };
+                frictionImpulse = { tangent.x * j * mu, -tangent.y * j * mu };
             }
-
+            
             A.body.velocity += frictionImpulse * A.body.invMass;
             B.body.velocity -= frictionImpulse * B.body.invMass;
-            std::cout<<frictionImpulse.x << ", " << frictionImpulse.y << std::endl;
-            std::cout<<A.body.invMass << ", " << A.body.invMass << std::endl;
-            std::cout  << A.body.velocity.x << ", " << A.body.velocity.y << std::endl;
+            
+            std::cout<<"speed x: " << B.body.velocity.x << " | speed y: " << B.body.velocity.y << std::endl;
+            std::cout<<"friction "<< frictionImpulse.x << ", " << frictionImpulse.y << std::endl;
+            std::cout<<"invmass "<< A.body.invMass << ", " << B.body.invMass << std::endl;
+            std::cout<<"Normal X: " << m.normal.x << " | Normal Y: " << m.normal.y << " | Depth: " << m.depth << std::endl;
         }
     }
 };
@@ -203,10 +213,11 @@ int main() {
     
     Shape floorShape({ {-100, -1}, {100, -1}, {100, 1}, {-100, 1} });
     Shape boxShape({{0,0}, {1,0}, {1,1}, {0,1}});
-    
+    Body box(0.0f, 10.0f, 1.0f, 0.2f, 0.1f);
+    box.velocity={1.5f, 0.0f};
     world.emplace_back(Body(0.0f, -2.0f, 0.0f,0.5f, 0.3f), &floorShape); // Static floor
-    world.emplace_back(Body(0.0f, 10.0f, 1.0f, 0.2f, 0.1f), &boxShape);   // Dynamic box
-
+    world.emplace_back(box, &boxShape);   // Dynamic box
+    
     // 3. Main Loop
     while (!glfwWindowShouldClose(window)) {
         float timeScale = 1.0f;
