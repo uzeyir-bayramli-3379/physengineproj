@@ -68,9 +68,6 @@ Manifold CheckCollision(PhysicsObject& A, PhysicsObject& B) {
             m.normal = axis;
         }
     }
-    if (m.depth > 0) {
-    std::cout << "Collision Depth: " << m.depth << " Normal: " << m.normal.y << std::endl;
-}
     m.colliding = true;
     return m;
 }
@@ -112,6 +109,87 @@ void render(const std::vector<PhysicsObject>& world) {
         glEnd();
     }
 }
+class ImpulseResolver {
+public:
+    // This is where all the math lives
+    static void Resolve(PhysicsObject& A, PhysicsObject& B, Manifold& m) {
+        Vector2 relativePos = B.body.position - A.body.position;
+        if (A.body.invMass == 0.0f && (m.normal.y < 0)) {
+            m.normal = { -m.normal.x, -m.normal.y };
+        }
+        // 1. Position Correction (to stop sinking)
+        ApplyPositionCorrection(A, B, m);
+
+        // 2. Impulse Resolution (Bounce and Friction)
+        ApplyImpulse(A, B, m);
+        std::cout<<"Normal X: " << m.normal.x << " | Normal Y: " << m.normal.y << " | Depth: " << m.depth << std::endl;
+    }
+
+private:
+    static void ApplyPositionCorrection(PhysicsObject& A, PhysicsObject& B, const Manifold& m) {
+        float totalInvMass = A.body.invMass + B.body.invMass;
+        if (totalInvMass == 0.0f) return;
+
+        const float slop = 0.01f; 
+        const float percent = 0.8f; // INCREASED to 0.8f for faster correction
+
+        float correctionMag = (std::max(m.depth - slop, 0.0f) / totalInvMass) * percent;
+        Vector2 correction = { m.normal.x * correctionMag, m.normal.y * correctionMag };
+
+        A.body.position -= correction * A.body.invMass;
+        B.body.position += correction * B.body.invMass;
+    }
+
+    static void ApplyImpulse(PhysicsObject& A, PhysicsObject& B, const Manifold& m) {
+        Vector2 rv = B.body.velocity - A.body.velocity;
+        float velAlongNormal = (rv.x * m.normal.x) + (rv.y * m.normal.y);
+        // If objects are moving apart, don't resolve
+        if (velAlongNormal > 0) return;
+
+        // 2. Calculate Restitution (Bounce)
+        float e = std::min(A.body.restitution, B.body.restitution);
+        if (std::abs(velAlongNormal) < 0.5f) {
+            e = 0.0f; // Treat as perfectly inelastic
+        }
+        float j = -(1 + e) * velAlongNormal;
+        j /= (A.body.invMass + B.body.invMass);
+
+        // 3. Apply Normal Impulse
+        Vector2 impulse = { j * m.normal.x, j * m.normal.y };
+        A.body.velocity -= impulse * A.body.invMass;
+        B.body.velocity += impulse * B.body.invMass;
+        // --- Friction Logic ---
+        // Recalculate relative velocity after normal impulse
+        rv = B.body.velocity - A.body.velocity;
+
+        // Calculate tangent vector (perpendicular to normal)
+        Vector2 tangent = { rv.x - (m.normal.x * velAlongNormal), rv.y - (m.normal.y * velAlongNormal) };
+        float tangentLen = std::sqrt(tangent.x * tangent.x + tangent.y * tangent.y);
+        
+        if (tangentLen > 0.0001f) {
+            std::cout<<"yes"<<std::endl;
+            tangent = { tangent.x / tangentLen, tangent.y / tangentLen }; // Normalize
+
+            float jt = -(rv.x * tangent.x + rv.y * tangent.y);
+            jt /= (A.body.invMass + B.body.invMass);
+
+            // Coulomb's Law: limit friction based on normal impulse
+            float mu = 0.3f; // Friction coefficient
+            Vector2 frictionImpulse;
+            if (std::abs(jt) < j * mu) {
+                frictionImpulse = { tangent.x * jt, tangent.y * jt };
+            } else {
+                frictionImpulse = { -tangent.x * j * mu, -tangent.y * j * mu };
+            }
+
+            A.body.velocity += frictionImpulse * A.body.invMass;
+            B.body.velocity -= frictionImpulse * B.body.invMass;
+            std::cout<<frictionImpulse.x << ", " << frictionImpulse.y << std::endl;
+            std::cout<<A.body.invMass << ", " << A.body.invMass << std::endl;
+            std::cout  << A.body.velocity.x << ", " << A.body.velocity.y << std::endl;
+        }
+    }
+};
 int main() {
     // 1. Setup Window
     if (!glfwInit()) return -1;
@@ -124,10 +202,10 @@ int main() {
     Vector2 gravity = {0.0f, -9.81f};
     
     Shape floorShape({ {-100, -1}, {100, -1}, {100, 1}, {-100, 1} });
-    Shape box({{0,0}, {1,0}, {1,1}, {0,1}});
+    Shape boxShape({{0,0}, {1,0}, {1,1}, {0,1}});
     
-    world.emplace_back(Body(0.0f, -2.0f, 0.0f), &floorShape); // Static floor
-    world.emplace_back(Body(0.0f, 10.0f, 1.0f), &box);       // Dynamic box
+    world.emplace_back(Body(0.0f, -2.0f, 0.0f,0.5f, 0.3f), &floorShape); // Static floor
+    world.emplace_back(Body(0.0f, 10.0f, 1.0f, 0.2f, 0.1f), &boxShape);   // Dynamic box
 
     // 3. Main Loop
     while (!glfwWindowShouldClose(window)) {
@@ -147,21 +225,21 @@ int main() {
         for (int s = 0; s < subSteps; s++) {
             for (auto& obj : world) {
                 if (obj.body.invMass > 0.0f) {
-                    obj.body.updateRK4(dt, gravity * obj.body.mass);
+                    //obj.body.updateRK4(dt, gravity * obj.body.mass);
+                    obj.body.updateEuler(dt, gravity * obj.body.mass);
                 }
             }
-
             for (size_t i = 0; i < world.size(); i++) {
                 for (size_t j = i + 1; j < world.size(); j++) {
                     Manifold m = CheckCollision(world[i], world[j]);
                     if (m.colliding) {
-                        ResolveConstraint(world[i], world[j], m);
-                        // Zero out vertical velocity on contact
-                        if (world[i].body.invMass > 0.0f) world[i].body.velocity.y = 0.0f;
-                        if (world[j].body.invMass > 0.0f) world[j].body.velocity.y = 0.0f;
+                        ImpulseResolver::Resolve(world[i], world[j], m);
                     }
                 }
             }
+            
+
+            
         }
 
         // --- Rendering ---

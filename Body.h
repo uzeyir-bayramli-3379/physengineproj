@@ -10,11 +10,14 @@ public:
     // Physical Properties
     float mass;
     float invMass; // 0.0f for static (immovable), 1.0f/mass for dynamic
+    float restitution; // 0 = no bounce, 1 = perfect bounce
+    float friction;
 
-    Body(float x, float y, float m);
+    Body(float x, float y, float m, float res, float fric);
 
     // RK4 Integration step (Translation only)
-    void updateRK4(float dt, Vector2 force);
+    //void updateRK4(float dt, Vector2 force);
+    void updateEuler(float dt, Vector2 force);
 
 private:
     // Helper structures for RK4
