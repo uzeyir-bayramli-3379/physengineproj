@@ -281,6 +281,16 @@ void ResolveCollision(PhysicsObject& A, PhysicsObject& B, Manifold m) {
     
     B.body.position.x -= m.normal.x * magnitude * B.body.invMass;
     B.body.position.y -= m.normal.y * magnitude * B.body.invMass;
+
+    // Stop x velocity when colliding with vertical walls
+    if (B.body.mass == 0.0f && std::abs(m.normal.x) > std::abs(m.normal.y)) {
+        A.body.velocity.x = 0.0f;
+        A.body.angularVelocity = 0.0f; // Stop spinning on wall collision
+    }
+    // Stop spinning on floor collision
+    if (B.body.mass == 0.0f && std::abs(m.normal.y) > std::abs(m.normal.x)) {
+        A.body.angularVelocity = 0.0f;
+    }
 }
 int sign(float val) {
     if (val > 0.0f) return 1;
@@ -322,9 +332,10 @@ int main() {
 
     // 2. Add to world at specific positions
     world.push_back({ Body(0.0f, 1.5f, 0.1f), &boxShape });   // Square falling
+    world[0].body.velocity.x = 1.5f; // Initial x velocity
     world.push_back({ Body(0.0f, -1.8f, 0.0f), &floorShape }); // Floor at bottom
-    world.push_back({ Body(-1.0f, 1.0f, 0.0f), &wallShape });  // Left wall
-    world.push_back({ Body(3.0f, 1.0f, 0.0f), &wallShape });   // Right wall
+    world.push_back({ Body(-1.0f, 0.0f, 0.0f), &wallShape });  // Left wall
+    world.push_back({ Body(3.0f, 0.0f, 0.0f), &wallShape });   // Right wall
     while (!glfwWindowShouldClose(window)) {
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
