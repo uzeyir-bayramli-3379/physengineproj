@@ -1,15 +1,14 @@
 cmake_minimum_required(VERSION 3.10)
 project(PhysicsEngine)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-# 1. Find GLFW and OpenGL
-find_package(glfw3  REQUIRED)
+
+# Find your dependencies
+find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
 
-# Add the directory to the include path
-include_directories(vendor/imgui)
-
-# Add the source files to your project
+# Define your source files
 add_executable(PhysicsEngine 
     main.cpp 
     Body.cpp 
@@ -21,5 +20,10 @@ add_executable(PhysicsEngine
     vendor/imgui/backends/imgui_impl_opengl3.cpp
 )
 
-# 2. Link BOTH GLFW and OpenGL
-target_link_libraries(PhysicsEngine PRIVATE glfw OpenGL::GL)
+# Link the libraries and include the header paths
+target_link_libraries(PhysicsEngine glfw OpenGL::GL)
+
+target_include_directories(PhysicsEngine PRIVATE 
+    vendor/imgui 
+    vendor/imgui/backends
+)

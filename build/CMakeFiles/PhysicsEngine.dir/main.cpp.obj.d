@@ -205,4 +205,14 @@ CMakeFiles/PhysicsEngine.dir/main.cpp.obj: \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/lib/gcc/x86_64-w64-mingw32/5.3.0/include/mwaitxintrin.h \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/random.tcc \
  C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/numeric \
- C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/stl_numeric.h
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/include/c++/5.3.0/bits/stl_numeric.h \
+ C:/Users/uzeyi/Desktop/physengineproj/vendor/imgui/imgui.h \
+ C:/Users/uzeyi/Desktop/physengineproj/vendor/imgui/imconfig.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/lib/gcc/x86_64-w64-mingw32/5.3.0/include/stdarg.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/stdarg.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/_mingw_stdarg.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/string.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/sec_api/string_s.h \
+ C:/Users/uzeyi/anaconda3/envs/phys_cpp/Library/mingw-w64/x86_64-w64-mingw32/include/assert.h \
+ C:/Users/uzeyi/Desktop/physengineproj/vendor/imgui/backends/imgui_impl_glfw.h \
+ C:/Users/uzeyi/Desktop/physengineproj/vendor/imgui/backends/imgui_impl_opengl3.h

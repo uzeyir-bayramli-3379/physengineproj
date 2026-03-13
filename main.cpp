@@ -9,6 +9,9 @@
 #include <iostream>
 #include <algorithm>
 #include <limits>
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 // For rendering (if needed)
 struct Manifold {
     bool colliding;
@@ -175,7 +178,7 @@ private:
         float tangentLen = std::sqrt(tangent.x * tangent.x + tangent.y * tangent.y);
         
         if (tangentLen > 0.0001f) {
-            std::cout<<"yes"<<std::endl;
+            //std::cout<<"yes"<<std::endl;
             tangent = { tangent.x / tangentLen, tangent.y / tangentLen }; // Normalize
 
             float jt = -(rv.x * tangent.x + rv.y * tangent.y);
@@ -193,10 +196,10 @@ private:
             A.body.velocity += frictionImpulse * A.body.invMass;
             B.body.velocity -= frictionImpulse * B.body.invMass;
             
-            std::cout<<"speed x: " << B.body.velocity.x << " | speed y: " << B.body.velocity.y << std::endl;
-            std::cout<<"friction "<< frictionImpulse.x << ", " << frictionImpulse.y << std::endl;
-            std::cout<<"invmass "<< A.body.invMass << ", " << B.body.invMass << std::endl;
-            std::cout<<"Normal X: " << m.normal.x << " | Normal Y: " << m.normal.y << " | Depth: " << m.depth << std::endl;
+            //std::cout<<"speed x: " << B.body.velocity.x << " | speed y: " << B.body.velocity.y << std::endl;
+            //std::cout<<"friction "<< frictionImpulse.x << ", " << frictionImpulse.y << std::endl;
+            //std::cout<<"invmass "<< A.body.invMass << ", " << B.body.invMass << std::endl;
+            //std::cout<<"Normal X: " << m.normal.x << " | Normal Y: " << m.normal.y << " | Depth: " << m.depth << std::endl;
         }
     }
 };
@@ -205,69 +208,79 @@ int main() {
     if (!glfwInit()) return -1;
     GLFWwindow* window = glfwCreateWindow(640, 480, "Physics Engine", NULL, NULL);
     glfwMakeContextCurrent(window);
-    glfwSwapInterval(1); // Enable V-Sync to cap framerate and fix speed
-
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 130");
     // 2. Setup World
     std::vector<PhysicsObject> world;
     Vector2 gravity = {0.0f, -9.81f};
     
     Shape floorShape({ {-100, -1}, {100, -1}, {100, 1}, {-100, 1} });
     Shape boxShape({{0,0}, {1,0}, {1,1}, {0,1}});
-    Body box(0.0f, 10.0f, 1.0f, 0.2f, 0.1f);
-    box.velocity={1.5f, 0.0f};
+    Body box(0.0f, 1.0f, 1.0f, 0.2f, 0.1f);
+    box.velocity={4.0f, 0.0f};
     world.emplace_back(Body(0.0f, -2.0f, 0.0f,0.5f, 0.3f), &floorShape); // Static floor
     world.emplace_back(box, &boxShape);   // Dynamic box
-    
-    // 3. Main Loop
-    while (!glfwWindowShouldClose(window)) {
-        float timeScale = 1.0f;
+    // ... inside main ...
+double lastTime = glfwGetTime();
+std::vector<PhysicsObject> spawnQueue; // Safety first!
 
-        // Inside the while loop, check for a key press
-        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-            timeScale = 0.1f; // Slow down when space is held
-        } else {
-            timeScale = 1.0f; // Return to normal
+while (!glfwWindowShouldClose(window)) {
+    double currentTime = glfwGetTime();
+    double deltaTime = currentTime - lastTime;
+    lastTime = currentTime;
+
+    // Accumulator for fixed time-stepping
+    static double accumulator = 0.0;
+    accumulator += deltaTime;
+
+    glfwPollEvents();
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    ImGui::Begin("Spawner");
+    if (ImGui::Button("Add Box")) {
+        // Spawn within the -10 to 10 view range
+        Body newBox(0.0f, 5.0f, 1.0f, 0.5f, 0.3f);
+        newBox.velocity = {4.0f, 0.0f}; // Initial
+        spawnQueue.emplace_back(newBox, &boxShape);
+    }
+    ImGui::End();
+
+    // 1. Process Spawning safely
+    for(auto& newObj : spawnQueue) world.push_back(newObj);
+    spawnQueue.clear();
+
+    // 2. Fixed Physics Step (The "Slow-down" logic)
+    const double fixedDt = 0.01667; 
+    while (accumulator >= fixedDt) {
+        for (auto& obj : world) {
+            if (obj.body.invMass > 0.0f) 
+                obj.body.updateEuler(fixedDt, gravity * obj.body.mass);
         }
-        float frameTime = 0.016f*timeScale; // Target 60 FPS
-        int subSteps = 4;
-        float dt = frameTime / subSteps;
-
-        // --- Physics Logic ---
-        for (int s = 0; s < subSteps; s++) {
-            for (auto& obj : world) {
-                if (obj.body.invMass > 0.0f) {
-                    //obj.body.updateRK4(dt, gravity * obj.body.mass);
-                    obj.body.updateEuler(dt, gravity * obj.body.mass);
-                }
-            }
-            for (size_t i = 0; i < world.size(); i++) {
-                for (size_t j = i + 1; j < world.size(); j++) {
-                    Manifold m = CheckCollision(world[i], world[j]);
-                    if (m.colliding) {
-                        ImpulseResolver::Resolve(world[i], world[j], m);
-                    }
-                }
-            }
-            
-
-            
-        }
-
-        // --- Rendering ---
-        glClear(GL_COLOR_BUFFER_BIT);
         
-        glMatrixMode(GL_PROJECTION);
-        glLoadIdentity();
-        glOrtho(-10, 10, -10, 10, -1, 1);
-        glMatrixMode(GL_MODELVIEW);
-        glLoadIdentity();
-
-        render(world);
-
-        glfwSwapBuffers(window);
-        glfwPollEvents();
+        for (size_t i = 0; i < world.size(); i++) {
+            for (size_t j = i + 1; j < world.size(); j++) {
+                Manifold m = CheckCollision(world[i], world[j]);
+                if (m.colliding) ImpulseResolver::Resolve(world[i], world[j], m);
+            }
+        }
+        accumulator -= fixedDt;
     }
 
-    glfwTerminate();
-    return 0;
+    // 3. Render
+    glClear(GL_COLOR_BUFFER_BIT);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(-10, 10, -10, 10, -1, 1);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    render(world);
+    
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    glfwSwapBuffers(window);
+}
 }
