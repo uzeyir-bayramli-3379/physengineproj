@@ -401,3 +401,4 @@ int main() {
     return 0;
     
 }
+//failed miserably gonna start another project from scratch, this one is a mess and I don't know how to fix it.
