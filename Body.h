@@ -18,8 +18,8 @@ public:
 
 private:
     // Define helper structs and function INSIDE the class
-    struct State { Vector2 pos; Vector2 vel; };
-    struct Derivative { Vector2 dp; Vector2 dv; };
+    struct State { Vector2 pos; Vector2 vel; float ang; float angVel; };
+    struct Derivative { Vector2 dp; Vector2 dv; float dang; float dangVel; };
     
     Derivative evaluate(const State& initial, float dt, const Derivative& d, Vector2 force);
 };

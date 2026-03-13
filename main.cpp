@@ -6,11 +6,12 @@
 #include "backends/imgui_impl_opengl3.h"
 #include <vector>
 #include <cstdio>
+#include <algorithm>
 
 
 struct Shape {
-    std::vector<ImVec2> localVertices; // Points relative to (0,0)
-    std::vector<ImVec2> localNormals;  // Pre-calculated normals
+    std::vector<Vector2> localVertices; // Points relative to (0,0)
+    std::vector<Vector2> localNormals;  // Pre-calculated normals
 };
 
 struct PhysicsObject {
@@ -32,8 +33,8 @@ struct PhysicsObject {
         localUp    = {-s, c};
     }
 };
-std::vector<ImVec2> getRotatedNormals(const PhysicsObject& obj) {
-    std::vector<ImVec2> worldNormals;
+std::vector<Vector2> getRotatedNormals(const PhysicsObject& obj) {
+    std::vector<Vector2> worldNormals;
     for (const auto& localN : obj.shape->localNormals) {
         // Dot product projection to transform the vector
         float x = (localN.x * obj.localRight.x) + (localN.y * obj.localUp.x);
@@ -44,7 +45,7 @@ std::vector<ImVec2> getRotatedNormals(const PhysicsObject& obj) {
 }
 struct Projection { float min; float max; };
 
-Projection projectShape(const PhysicsObject& obj, ImVec2 axis) {
+Projection projectShape(const PhysicsObject& obj, Vector2 axis) {
     float min = FLT_MAX;
     float max = -FLT_MAX;
 
@@ -62,15 +63,15 @@ Projection projectShape(const PhysicsObject& obj, ImVec2 axis) {
     }
     return { min, max };
 }
-Shape createShape(std::vector<ImVec2> vertices) {
+Shape createShape(std::vector<Vector2> vertices) {
     Shape s;
     s.localVertices = vertices;
     int count = vertices.size();
     for (int i = 0; i < count; i++) {
-        ImVec2 p1 = vertices[i];
-        ImVec2 p2 = vertices[(i + 1) % count];
-        ImVec2 edge = { p2.x - p1.x, p2.y - p1.y };
-        ImVec2 normal = { -edge.y, edge.x }; // Perpendicular
+        Vector2 p1 = vertices[i];
+        Vector2 p2 = vertices[(i + 1) % count];
+        Vector2 edge = { p2.x - p1.x, p2.y - p1.y };
+        Vector2 normal = { -edge.y, edge.x }; // Perpendicular
         float len = sqrt(normal.x * normal.x + normal.y * normal.y);
         s.localNormals.push_back({ normal.x / len, normal.y / len });
     }
@@ -91,7 +92,8 @@ void drawPolygon(PhysicsObject& obj) {
 struct Manifold {
     bool colliding;
     float depth;      // The smallest overlap found
-    ImVec2 normal;    // The axis along which the overlap occurred
+    Vector2 normal;    // The axis along which the overlap occurred
+    Vector2 contactPoint; // The contact point for torque
 };
 
 Manifold CheckCollisionAndFindManifold(PhysicsObject& A, PhysicsObject& B) {
@@ -99,29 +101,110 @@ Manifold CheckCollisionAndFindManifold(PhysicsObject& A, PhysicsObject& B) {
     m.colliding = false;
     m.depth = FLT_MAX;
     
-    // 1. Get rotated normals for both shapes
-    std::vector<ImVec2> axes = getRotatedNormals(A);
-    std::vector<ImVec2> bNormals = getRotatedNormals(B);
-    axes.insert(axes.end(), bNormals.begin(), bNormals.end());
+    // Transform vertices to world space once
+    std::vector<Vector2> worldVertsA;
+    for (const auto& localV : A.shape->localVertices) {
+        float wx = A.body.position.x + (localV.x * A.localRight.x) + (localV.y * A.localUp.x);
+        float wy = A.body.position.y + (localV.x * A.localRight.y) + (localV.y * A.localUp.y);
+        worldVertsA.push_back({wx, wy});
+    }
+    std::vector<Vector2> worldVertsB;
+    for (const auto& localV : B.shape->localVertices) {
+        float wx = B.body.position.x + (localV.x * B.localRight.x) + (localV.y * B.localUp.x);
+        float wy = B.body.position.y + (localV.x * B.localRight.y) + (localV.y * B.localUp.y);
+        worldVertsB.push_back({wx, wy});
+    }
+
+    // Transform normals to world space
+    std::vector<Vector2> worldNormalsA;
+    for (const auto& localN : A.shape->localNormals) {
+        float nx = localN.x * A.localRight.x + localN.y * A.localUp.x;
+        float ny = localN.x * A.localRight.y + localN.y * A.localUp.y;
+        worldNormalsA.push_back({nx, ny});
+    }
+    std::vector<Vector2> worldNormalsB;
+    for (const auto& localN : B.shape->localNormals) {
+        float nx = localN.x * B.localRight.x + localN.y * B.localUp.x;
+        float ny = localN.x * B.localRight.y + localN.y * B.localUp.y;
+        worldNormalsB.push_back({nx, ny});
+    }
+
+    std::vector<Vector2> axes = worldNormalsA;
+    axes.insert(axes.end(), worldNormalsB.begin(), worldNormalsB.end());
 
     // 2. The SAT Loop
     for (auto& axis : axes) {
-        Projection projA = projectShape(A, axis);
-        Projection projB = projectShape(B, axis);
+        // Project world vertices
+        float minA = FLT_MAX, maxA = -FLT_MAX;
+        for (auto& v : worldVertsA) {
+            float p = v.x * axis.x + v.y * axis.y;
+            if (p < minA) minA = p;
+            if (p > maxA) maxA = p;
+        }
+        float minB = FLT_MAX, maxB = -FLT_MAX;
+        for (auto& v : worldVertsB) {
+            float p = v.x * axis.x + v.y * axis.y;
+            if (p < minB) minB = p;
+            if (p > maxB) maxB = p;
+        }
 
         // Check for a gap
-        if (projA.max < projB.min || projB.max < projA.min) {
-            return { false, 0.0f, {0,0} }; // Found a gap, no collision!
+        if (maxA < minB || maxB < minA) {
+            return { false, 0.0f, {0,0}, {0,0} }; // Found a gap, no collision!
         }
 
         // 3. Find the overlap depth on this axis
-        float overlap = std::min(projA.max, projB.max) - std::max(projA.min, projB.min);
+        float overlap = std::min(maxA, maxB) - std::max(minA, minB);
         
         // Is this the smallest overlap so far? (The smallest overlap is the Collision Normal)
         if (overlap < m.depth) {
             m.depth = overlap;
             m.normal = axis;
         }
+    }
+
+    // Fix normal direction: should point from A to B
+    Vector2 fromAtoB = {B.body.position.x - A.body.position.x, B.body.position.y - A.body.position.y};
+    float dot = m.normal.x * fromAtoB.x + m.normal.y * fromAtoB.y;
+    if (dot > 0) {
+        m.normal.x = -m.normal.x;
+        m.normal.y = -m.normal.y;
+    }
+
+    // Calculate contact point: average of vertices with min projection for A and max for B
+    float minProjA = FLT_MAX;
+    std::vector<Vector2> contactVertsA;
+    for (auto& v : worldVertsA) {
+        float p = v.x * m.normal.x + v.y * m.normal.y;
+        if (p < minProjA) {
+            minProjA = p;
+            contactVertsA.clear();
+            contactVertsA.push_back(v);
+        } else if (std::abs(p - minProjA) < 1e-6f) {
+            contactVertsA.push_back(v);
+        }
+    }
+    float maxProjB = -FLT_MAX;
+    std::vector<Vector2> contactVertsB;
+    for (auto& v : worldVertsB) {
+        float p = v.x * m.normal.x + v.y * m.normal.y;
+        if (p > maxProjB) {
+            maxProjB = p;
+            contactVertsB.clear();
+            contactVertsB.push_back(v);
+        } else if (std::abs(p - maxProjB) < 1e-6f) {
+            contactVertsB.push_back(v);
+        }
+    }
+    // Average all contact verts
+    Vector2 sum = {0,0};
+    int count = 0;
+    for (auto& v : contactVertsA) { sum.x += v.x; sum.y += v.y; count++; }
+    for (auto& v : contactVertsB) { sum.x += v.x; sum.y += v.y; count++; }
+    if (count > 0) {
+        m.contactPoint = {sum.x / count, sum.y / count};
+    } else {
+        m.contactPoint = {(A.body.position.x + B.body.position.x)/2, (A.body.position.y + B.body.position.y)/2};
     }
 
     m.colliding = true;
@@ -134,23 +217,24 @@ void ResolveCollision(PhysicsObject& A, PhysicsObject& B, Manifold m) {
     float totalInvMass = A.body.invMass + B.body.invMass;
     if (totalInvMass == 0.0f) return;
 
-    // Position correction
-    float magnitude = (std::max(m.depth - slop, 0.0f) / totalInvMass) * percent;
-    
-    A.body.position.x += m.normal.x * magnitude * A.body.invMass;
-    A.body.position.y += m.normal.y * magnitude * A.body.invMass;
-    
-    B.body.position.x -= m.normal.x * magnitude * B.body.invMass;
-    B.body.position.y -= m.normal.y * magnitude * B.body.invMass;
+    // Calculate r vectors
+    Vector2 rA = { m.contactPoint.x - A.body.position.x, m.contactPoint.y - A.body.position.y };
+    Vector2 rB = { m.contactPoint.x - B.body.position.x, m.contactPoint.y - B.body.position.y };
 
-    // Velocity resolution (impulse)
+    // Velocity resolution (impulse) first
     Vector2 relativeVelocity = { A.body.velocity.x - B.body.velocity.x, A.body.velocity.y - B.body.velocity.y };
     float velocityAlongNormal = relativeVelocity.x * m.normal.x + relativeVelocity.y * m.normal.y;
     
-    if (velocityAlongNormal > 0) return; // Already separating
+    // if (velocityAlongNormal > 0) return; // Already separating - remove this for inelastic
     
-    float restitution = 0.0f; // No bounce
-    float impulse = -(1 + restitution) * velocityAlongNormal / totalInvMass;
+    float restitution = 0.1f; // Slight bounce
+
+    // Calculate denominator for impulse
+    float crossA = rA.x * m.normal.y - rA.y * m.normal.x;
+    float crossB = rB.x * m.normal.y - rB.y * m.normal.x;
+    float denom = totalInvMass + A.body.invInertia * crossA * crossA + B.body.invInertia * crossB * crossB;
+    
+    float impulse = -(1 + restitution) * velocityAlongNormal / denom;
     
     Vector2 impulseVector = { m.normal.x * impulse, m.normal.y * impulse };
     
@@ -159,6 +243,44 @@ void ResolveCollision(PhysicsObject& A, PhysicsObject& B, Manifold m) {
     
     B.body.velocity.x -= impulseVector.x * B.body.invMass;
     B.body.velocity.y -= impulseVector.y * B.body.invMass;
+
+    // Angular impulse
+    A.body.angularVelocity += crossA * impulse * A.body.invInertia;
+    B.body.angularVelocity -= crossB * impulse * B.body.invInertia;
+
+    // Friction
+    // Recalculate relative velocity after normal impulse
+    relativeVelocity = { A.body.velocity.x - B.body.velocity.x, A.body.velocity.y - B.body.velocity.y };
+    Vector2 tangent = { -m.normal.y, m.normal.x }; // perpendicular to normal
+    float velocityAlongTangent = relativeVelocity.x * tangent.x + relativeVelocity.y * tangent.y;
+    
+    float friction = 0.1f; // friction coefficient
+    float crossTangentA = rA.x * tangent.y - rA.y * tangent.x;
+    float crossTangentB = rB.x * tangent.y - rB.y * tangent.x;
+    float denomTangent = totalInvMass + A.body.invInertia * crossTangentA * crossTangentA + B.body.invInertia * crossTangentB * crossTangentB;
+    
+    float tangentImpulse = -velocityAlongTangent / denomTangent;
+    tangentImpulse = std::max(-friction * std::abs(impulse), std::min(tangentImpulse, friction * std::abs(impulse))); // clamp
+    
+    Vector2 tangentImpulseVector = { tangent.x * tangentImpulse, tangent.y * tangentImpulse };
+    
+    A.body.velocity.x += tangentImpulseVector.x * A.body.invMass;
+    A.body.velocity.y += tangentImpulseVector.y * A.body.invMass;
+    
+    B.body.velocity.x -= tangentImpulseVector.x * B.body.invMass;
+    B.body.velocity.y -= tangentImpulseVector.y * B.body.invMass;
+    
+    A.body.angularVelocity += crossTangentA * tangentImpulse * A.body.invInertia;
+    B.body.angularVelocity -= crossTangentB * tangentImpulse * B.body.invInertia;
+
+    // Position correction after impulse
+    float magnitude = (std::max(m.depth - 0.0f, 0.0f) / totalInvMass) * 1.0f;
+    
+    A.body.position.x += m.normal.x * magnitude * A.body.invMass;
+    A.body.position.y += m.normal.y * magnitude * A.body.invMass;
+    
+    B.body.position.x -= m.normal.x * magnitude * B.body.invMass;
+    B.body.position.y -= m.normal.y * magnitude * B.body.invMass;
 }
 int sign(float val) {
     if (val > 0.0f) return 1;
@@ -236,12 +358,14 @@ int main() {
         // --- B. COLLISION DETECTION & RESOLUTION ---
         for (size_t i = 0; i < world.size(); i++) {
             for (size_t j = i + 1; j < world.size(); j++) {
+                // Skip collision detection between static objects
+                if (world[i].body.mass == 0.0f && world[j].body.mass == 0.0f) continue;
 
                 // This is the "Universal" SAT check we built
                 Manifold m = CheckCollisionAndFindManifold(world[i], world[j]);
 
                 if (m.colliding) {
-                    printf("Colliding! Depth: %f, Normal: (%f, %f)\n", m.depth, m.normal.x, m.normal.y);
+                    printf("Colliding! Depth: %f, Normal: (%f, %f), Contact: (%f, %f)\n", m.depth, m.normal.x, m.normal.y, m.contactPoint.x, m.contactPoint.y);
                     if (m.colliding && m.depth > 0.001f) { // Ignore tiny depth "jitters"
                         ResolveCollision(world[i], world[j], m);
                     }
