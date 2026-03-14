@@ -12,8 +12,9 @@ public:
     float invMass; // 0.0f for static (immovable), 1.0f/mass for dynamic
     float restitution; // 0 = no bounce, 1 = perfect bounce
     float friction;
+    int id;
 
-    Body(float x, float y, float m, float res, float fric);
+    Body(float x, float y, float m, float res, float fric, int bodyId);
 
     // RK4 Integration step (Translation only)
     //void updateRK4(float dt, Vector2 force);

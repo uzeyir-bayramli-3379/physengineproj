@@ -1,6 +1,6 @@
 #include "Body.h"
 
-Body::Body(float x, float y, float m,float res,float fric) : position({x, y}), velocity({0, 0}), mass(m)
+Body::Body(float x, float y, float m,float res,float fric, int bodyId) : position({x, y}), velocity({0, 0}), mass(m), id(bodyId)
 ,restitution(res), friction(fric) {
     invMass = (m > 0.0f) ? (1.0f / m) : 0.0f;
 }

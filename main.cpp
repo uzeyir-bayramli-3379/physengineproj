@@ -110,6 +110,16 @@ void render(const std::vector<PhysicsObject>& world) {
             glVertex2f(wx, wy);
         }
         glEnd();
+        //glBegin(GL_LINES);
+        //glColor3f(0.0f, 1.0f, 0.0f); // Bright green lines
+        //for (const auto& normal : obj.shape->localNormals) {
+        //    // Start at the center of the body
+        //    glVertex2f(obj.body.position.x, obj.body.position.y);
+        //    // End at center + normal vector (scaled by 2.0 to make them visible)
+        //    glVertex2f(obj.body.position.x + normal.x * 2.0f, 
+        //               obj.body.position.y + normal.y * 2.0f);
+        //}
+        //glEnd(); // Optional: visualize normals
     }
 }
 class ImpulseResolver {
@@ -155,8 +165,15 @@ private:
         Vector2 rv = B.body.velocity - A.body.velocity;
         float velAlongNormal = (rv.x * m.normal.x) + (rv.y * m.normal.y);
         // If objects are moving apart, don't resolve
+        if (A.body.mass!=0.0f) {
+        std::cout<<"first obj"<<B.body.id<<" | second obj "<<A.body.id<<std::endl;
+        std::cout<<"m.normal x: " << m.normal.x << " | m.normal y: " << m.normal.y << std::endl;
+        std::cout<<"velAlongNormal: " << velAlongNormal << std::endl;
+        }
+        
         if (velAlongNormal > 0) return;
-
+        
+        
         // 2. Calculate Restitution (Bounce)
         float e = std::min(A.body.restitution, B.body.restitution);
         if (std::abs(velAlongNormal) < 0.5f) {
@@ -167,6 +184,8 @@ private:
 
         // 3. Apply Normal Impulse
         Vector2 impulse = { j * m.normal.x, j * m.normal.y };
+        if (A.body.mass!=0.0f) {
+        std::cout<<"Impulse X: " << impulse.x << " | Impulse Y: " << impulse.y << std::endl;}
         A.body.velocity -= impulse * A.body.invMass;
         B.body.velocity += impulse * B.body.invMass;
         // --- Friction Logic ---
@@ -204,6 +223,7 @@ private:
     }
 };
 int main() {
+    int idCounter = 0;
     // 1. Setup Window
     if (!glfwInit()) return -1;
     GLFWwindow* window = glfwCreateWindow(640, 480, "Physics Engine", NULL, NULL);
@@ -218,9 +238,9 @@ int main() {
     
     Shape floorShape({ {-100, -1}, {100, -1}, {100, 1}, {-100, 1} });
     Shape boxShape({{0,0}, {1,0}, {1,1}, {0,1}});
-    Body box(0.0f, 1.0f, 1.0f, 0.2f, 0.1f);
+    Body box(0.0f, 1.0f, 1.0f, 0.2f, 0.1f, idCounter++);
     box.velocity={4.0f, 0.0f};
-    world.emplace_back(Body(0.0f, -2.0f, 0.0f,0.5f, 0.3f), &floorShape); // Static floor
+    world.emplace_back(Body(0.0f, -2.0f, 0.0f,0.5f, 0.3f, -1), &floorShape); // Static floor
     world.emplace_back(box, &boxShape);   // Dynamic box
     // ... inside main ...
 double lastTime = glfwGetTime();
@@ -243,7 +263,7 @@ while (!glfwWindowShouldClose(window)) {
     ImGui::Begin("Spawner");
     if (ImGui::Button("Add Box")) {
         // Spawn within the -10 to 10 view range
-        Body newBox(0.0f, 5.0f, 1.0f, 0.5f, 0.3f);
+        Body newBox(0.0f, 5.0f, 1.0f, 0.5f, 0.3f,idCounter++);
         newBox.velocity = {4.0f, 0.0f}; // Initial
         spawnQueue.emplace_back(newBox, &boxShape);
     }
@@ -278,7 +298,29 @@ while (!glfwWindowShouldClose(window)) {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     render(world);
-    
+
+    ImDrawList* draw_list = ImGui::GetForegroundDrawList();
+ImGuiIO& io = ImGui::GetIO();
+float windowWidth = ImGui::GetIO().DisplaySize.x;
+float windowHeight = ImGui::GetIO().DisplaySize.y;
+
+// World bounds
+float worldMin = -10.0f;
+float worldMax = 10.0f;
+float worldRange = worldMax - worldMin; // 20.0f
+for (const auto& obj : world) {
+    // 1. Convert world position to a 0.0 to 1.0 "percentage" of the screen
+    float normX = (obj.body.position.x - worldMin) / worldRange;
+    float normY = (worldMax - obj.body.position.y) / worldRange;
+
+    // 2. Convert to pixel coordinates based on current window size
+    float screenX = normX * 640.0f; // io.DisplaySize.x;
+    float screenY = normY * 480.0f; // io.DisplaySize.y;
+
+    // 3. Draw text
+    std::string text = std::to_string(obj.body.id);
+    draw_list->AddText(ImVec2(screenX, screenY), IM_COL32(0, 255, 0, 255), text.c_str());
+}
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     glfwSwapBuffers(window);
