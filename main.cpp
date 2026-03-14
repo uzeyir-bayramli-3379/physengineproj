@@ -230,15 +230,17 @@ int main() {
     Shape wallShapeL({ {1, -1}, {-1, -1}, {-1, 100}, {1, 100} });
     Shape floorShape({ {-100, -1}, {100, -1}, {100, 1}, {-100, 1} });
     Shape boxShape({{0,0}, {1,0}, {1,1}, {0,1}});
-    Body box(0.0f, 0.0f, 1.0f, 0.6f, 0.1f, idCounter++);
-    box.velocity={10.0f, 0.0f};
-    world.emplace_back(Body(0.0f, -2.0f, 0.0f,0.5f, 0.3f, -1), &floorShape); // Static floor
-    world.emplace_back(Body(-10.0f, 0.0f, 0.0f,0.5f, 0.3f, -2), &wallShapeL); // Static left wall
-    world.emplace_back(Body(5.0f, 0.0f, 0.0f,0.5f, 0.3f, -3), &wallShapeR); // Static right wall
+    float elast=1.0f;
+    Body box(-2.0f, -1.0f, 1.0f, elast, 0.1f, idCounter++);
+    box.velocity={0.0f, 0.0f};
+    world.emplace_back(Body(0.0f, -2.0f, 0.0f,elast, 0.3f, -1), &floorShape); // Static floor
+    world.emplace_back(Body(-10.0f, 0.0f, 0.0f,elast, 0.3f, -2), &wallShapeL); // Static left wall
+    //world.emplace_back(Body(5.0f, 0.0f, 0.0f,elast, 0.3f, -3), &wallShapeR); // Static right wall
     world.emplace_back(box, &boxShape);   // Dynamic box
     // ... inside main ...
 double lastTime = glfwGetTime();
 std::vector<PhysicsObject> spawnQueue; // Safety first!
+int totalCollisions = 0; // counts all collisions except with the floor
 
 while (!glfwWindowShouldClose(window)) {
     double currentTime = glfwGetTime();
@@ -257,10 +259,11 @@ while (!glfwWindowShouldClose(window)) {
     ImGui::Begin("Spawner");
     if (ImGui::Button("Add Box")) {
         // Spawn within the -10 to 10 view range
-        Body newBox(0.0f, 0.0f, 1.0f, 0.6f, 0.3f,idCounter++);
-        newBox.velocity = {10.0f, 0.0f}; // Initial
+        Body newBox(1.0f, -1.0f, 100.0f, elast, 0.3f,idCounter++);
+        newBox.velocity = {-1.0f, 0.0f}; // Initial
         spawnQueue.emplace_back(newBox, &boxShape);
     }
+    ImGui::Text("Collisions (excl. floor): %d", totalCollisions);
     ImGui::End();
 
     // 1. Process Spawning safely
@@ -268,7 +271,7 @@ while (!glfwWindowShouldClose(window)) {
     spawnQueue.clear();
 
     // 2. Fixed Physics Step (The "Slow-down" logic)
-    const double fixedDt = 0.01667; 
+    const double fixedDt = 0.01; 
     while (accumulator >= fixedDt) {
         for (auto& obj : world) {
             if (obj.body.invMass > 0.0f) 
@@ -278,7 +281,12 @@ while (!glfwWindowShouldClose(window)) {
         for (size_t i = 0; i < world.size(); i++) {
             for (size_t j = i + 1; j < world.size(); j++) {
                 Manifold m = CheckCollision(world[i], world[j]);
-                if (m.colliding) ImpulseResolver::Resolve(world[i], world[j], m);
+                if (m.colliding) {
+                    // Count all collisions except those involving the floor (id == -1)
+                    bool involvesFloor = (world[i].body.id == -1 || world[j].body.id == -1);
+                    if (!involvesFloor) totalCollisions++;
+                    ImpulseResolver::Resolve(world[i], world[j], m);
+                }
             }
         }
         accumulator -= fixedDt;
