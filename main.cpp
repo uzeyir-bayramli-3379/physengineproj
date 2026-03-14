@@ -259,8 +259,8 @@ while (!glfwWindowShouldClose(window)) {
     ImGui::Begin("Spawner");
     if (ImGui::Button("Add Box")) {
         // Spawn within the -10 to 10 view range
-        Body newBox(1.0f, -1.0f, 100.0f, elast, 0.3f,idCounter++);
-        newBox.velocity = {-1.0f, 0.0f}; // Initial
+        Body newBox(1.0f, 2.0f, 100.0f, elast, 0.3f,idCounter++);
+        newBox.velocity = {-5.0f, 0.0f}; // Initial
         spawnQueue.emplace_back(newBox, &boxShape);
     }
     ImGui::Text("Collisions (excl. floor): %d", totalCollisions);
